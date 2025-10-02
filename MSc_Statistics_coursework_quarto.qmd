@@ -39,15 +39,85 @@ require(kableExtra)
 # Put any library imports and other preamble here.
 ```
 
-This Rmarkdown document is intended to provide a basic template that you may use throughout the course, and to introduce you to basic functionality of the open-source bookdown R package for writing Rmarkdown documents [@xie2016bookdown].
 
-Please note:
+```{r, echo = FALSE, message=FALSE}
+# Load library
+library(palmerpenguins)
 
-- Rmarkdown syntax for the title and document style;
-- bookdown syntax to label and reference equations;
-- bookdown syntax to referencing literate and provide a bib file;
-- kable syntax to build clean and clear tables that can be referenced;
-- Rmarkdown inline functions to collect and print all code used.
+# Load penguins dataset
+data('penguins')
+```
+
+
+```{r,echo = FALSE}
+true_false <- apply(is.na(penguins), 1, any)
+
+penguins$missing_values <- c(true_false)
+
+df <- table(penguins$species)
+
+```
+
+```{r}
+#| label: tbl-palmer
+#| tbl-cap: "Species count for penguins."
+
+kbl(df,
+    caption = 'Spcies count', 
+    label = 'species_count',
+    digits = 2) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    font_size = 12)
+
+```
+@tbl-palmer provides the count for each species of penguin.
+
+
+
+```{r,echo = FALSE}
+
+species_names <- as.character((unique(penguins$species)))
+
+
+for (species in species_names){
+  bill_lengths <- penguins$bill_length_mm[penguins$species == species]
+  cat(species,"has mean bill length of",(mean(bill_lengths,na.rm = TRUE)),"\n")
+}
+
+for (species in species_names){
+  flipper_lengths <- penguins$flipper_length_mm[penguins$species == species]
+  cat(species,"has mean flipper length of",(mean(flipper_lengths,na.rm = TRUE)),"\n")
+}
+
+# Question 4
+species_mean <- function(variable){
+  results <- c()
+  for (species in species_names){
+  values <- penguins[[variable]][penguins$species == species]
+  msg <- paste(species,"has mean",variable,"of",(mean(values,na.rm = TRUE)))
+  results <- c(results, msg)
+  }
+  return(results)
+}
+
+species_mean("flipper_length_mm")
+```
+
+```{r}
+#| label: fig-scatter(flipper-body)
+#| tbl-cap: "Scatter plot of two simulated datasets."
+#| 
+# Question 5
+x = penguins$flipper_length_mm
+y = penguins$body_mass_g
+
+plot(x,y)
+```
+@fig-scatter shows a scatter plot of body mass vs flipper length 
+
+
+
 
 # Sampling from the Cauchy distribution
 
